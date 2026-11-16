@@ -6,7 +6,7 @@ import { doc, getDoc, setDoc, deleteDoc, collection, getDocs } from "firebase/fi
 let env;
 before(async () => {
   env = await initializeTestEnvironment({ projectId: "demo-meusgastos",
-    firestore: { rules: readFileSync("../web/firestore.rules", "utf8"), host: "127.0.0.1", port: 8080 } });
+    firestore: { rules: readFileSync("firestore.rules", "utf8"), host: "127.0.0.1", port: 8080 } });
 });
 after(async () => { await env.cleanup(); });
 const db = (uid, email) => env.authenticatedContext(uid, { email, email_verified: true }).firestore();

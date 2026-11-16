@@ -5,3 +5,4 @@ local.properties
 *.iml
 captures/
 node_modules/
+web-tests/firestore.rules
