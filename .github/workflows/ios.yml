@@ -1,0 +1,49 @@
+name: Gerar app iOS
+on:
+  push:
+    paths: ['ios/**', '.github/workflows/ios.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: macos-15
+    defaults:
+      run:
+        working-directory: ios
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gerar projeto Xcode
+        run: brew install xcodegen && xcodegen generate
+      - name: Compilar (sem assinatura)
+        run: |
+          xcodebuild -project MeusGastos.xcodeproj -scheme MeusGastos -configuration Release \
+            -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build > build.log 2>&1 \
+            || { grep -E "error:" build.log | sort -u | head -60; tail -n 25 build.log; exit 1; }
+          tail -n 5 build.log
+      - name: Empacotar
+        run: |
+          mkdir -p Payload && cp -R build/Build/Products/Release-iphoneos/MeusGastos.app Payload/
+          zip -qr ../MeusGastos-sem-assinatura.ipa Payload
+          zip -qr ../MeusGastos-iOS-Xcode.zip MeusGastos MeusGastos.xcodeproj project.yml README.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MeusGastos-ios
+          path: |
+            MeusGastos-sem-assinatura.ipa
+            MeusGastos-iOS-Xcode.zip
+      - uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: ios-v1.0.${{ github.run_number }}
+          name: Meus Gastos iOS 1.0.${{ github.run_number }}
+          body: |
+            Versão para iPhone (iOS 17+).
+            - MeusGastos-iOS-Xcode.zip: projeto pronto para abrir no Xcode e instalar com seu Apple ID.
+            - MeusGastos-sem-assinatura.ipa: para instalar com o Sideloadly (Windows ou Mac).
+            Instruções em ios/README.md.
+          files: |
+            MeusGastos-sem-assinatura.ipa
+            MeusGastos-iOS-Xcode.zip
+          make_latest: false
