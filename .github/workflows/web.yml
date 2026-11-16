@@ -1,0 +1,34 @@
+name: App web (testes e publicação)
+on:
+  push:
+    paths: ['web/**', 'web-tests/**', '.github/workflows/web.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency: { group: pages, cancel-in-progress: true }
+jobs:
+  testar-regras:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: web-tests } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - run: npm install --no-audit --no-fund
+      - run: npx firebase emulators:exec --only firestore --project demo-meusgastos "node --test regras.test.mjs"
+  publicar:
+    needs: testar-regras
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: { name: github-pages, url: '${{ steps.deploy.outputs.page_url }}' }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: web }
+      - id: deploy
+        uses: actions/deploy-pages@v4
