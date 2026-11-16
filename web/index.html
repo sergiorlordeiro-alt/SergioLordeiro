@@ -287,11 +287,12 @@ async function aposLogin() {
 }
 
 function assinar() {
+  window.__mg = { S, FB };
   setSync("", "Sincronizando…");
   let okTx = false, okCfg = false;
   const t = setTimeout(() => { if (!okTx || !okCfg) setSync("warn", "Sem internet — lançamentos ficam guardados e sobem depois"); }, 10000);
   const pronto = () => { if (okTx && okCfg) { clearTimeout(t); S.pronto = true; setSync("ok", `Base compartilhada · ${primeiroNome(S.user)}`); } };
-  const erro = e => { clearTimeout(t); setSync("warn", "Erro de sincronização (" + (e.code || "erro") + ")"); };
+  const erro = e => { clearTimeout(t); console.error("sync", e); setSync("warn", "Erro de sincronização (" + (e.code || "erro") + ")"); };
   S.unsub.push(FB.onSnapshot(colTx(), { includeMetadataChanges: true }, snap => {
     S.tx = snap.docs.map(d => ({ ...d.data(), id: d.id }));
     if (!snap.metadata.fromCache) { okTx = true; pronto(); }
