@@ -18,8 +18,9 @@ os dados ficam no celular.
 
 ### Opção 2 — GitHub (sem instalar nada)
 1. Crie um repositório no GitHub e envie esta pasta.
-2. O fluxo `.github/workflows/build.yml` compila sozinho. Em *Actions → Gerar APK → Artifacts*,
-   baixe `MeusGastos-apk`, descompacte e instale o APK no celular.
+2. O fluxo `.github/workflows/build.yml` compila sozinho a cada envio e publica o APK em
+   *Releases*. No celular, abra `https://github.com/<seu-usuario>/<repositorio>/releases/latest`,
+   toque em `MeusGastos.apk` e instale.
 
 ## Recursos
 - **Lançamentos**: despesa, recebimento ou aporte; valor, data, categoria, descrição, forma de pagamento.
