@@ -299,7 +299,7 @@ function assinar() {
     if (S.pronto) setSync(pend ? "" : "ok", pend ? "Enviando lançamentos…" : `Base compartilhada · ${primeiroNome(S.user)}`);
     render();
   }, erro));
-  S.unsub.push(FB.onSnapshot(refCfg(), snap => {
+  S.unsub.push(FB.onSnapshot(refCfg(), { includeMetadataChanges: true }, snap => {
     if (snap.exists()) { S.cfg = normalizeCfg(snap.data()); S.cfgFromStore = true; }
     if (!snap.metadata.fromCache) { okCfg = true; pronto(); }
     render();

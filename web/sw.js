@@ -1,5 +1,5 @@
 // Guarda os arquivos do app para abrir sem internet. Os dados ficam no cache do Firestore.
-const CACHE = "meus-gastos-v1";
+const CACHE = "meus-gastos-v2";
 const ARQS = ["./", "index.html", "firebase.js", "firebase-config.js", "chart.umd.js", "manifest.json", "icon-192.png", "icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(ARQS))); self.skipWaiting(); });
 self.addEventListener("activate", e => {
